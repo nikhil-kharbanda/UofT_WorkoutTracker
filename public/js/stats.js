@@ -72,8 +72,8 @@ function populateChart(data) {
 
   const line = document.querySelector("#canvas").getContext("2d");
   const bar = document.querySelector("#canvas2").getContext("2d");
-  const pie = document.querySelector("#canvas3").getContext("2d");
-  const donut = document.querySelector("#canvas4").getContext("2d");
+  const durationGraph = document.querySelector("#canvas3").getContext("2d");
+  const weightGraph = document.querySelector("#canvas4").getContext("2d");
 
   const labels = data.map(({ day }) => {
     const date = new Date(day);
@@ -159,14 +159,31 @@ function populateChart(data) {
     },
   });
 
-  let pieChart = new Chart(pie, {
-    type: "pie",
+  let durationChart = new Chart(durationGraph, {
+    type: "polarArea",
     data: {
       labels: names,
       datasets: [
         {
-          label: "Excercises Performed",
-          backgroundColor: colors,
+          label: "Excercises Performed (Time)",
+          backgroundColor: [
+            "#6feb60",
+            "#deed5d",
+            "#d03f5f",
+            "#e8a6f5",
+            "#cdded5",
+            "#012580",
+            "#0c7e82",
+            "#00d1a4",
+            "#cdded5",
+            "#a6ea43",
+            "#743924",
+            "#538181",
+            "26F0F1",
+            "4EEFE7",
+            "9DEDD3",
+            "202A25",
+          ],
           data: durations,
         },
       ],
@@ -174,19 +191,36 @@ function populateChart(data) {
     options: {
       title: {
         display: true,
-        text: "Excercises Performed",
+        text: "Excercises Performed (Time)",
       },
     },
   });
 
-  let donutChart = new Chart(donut, {
+  let weightChart = new Chart(weightGraph, {
     type: "doughnut",
     data: {
       labels: names,
       datasets: [
         {
           label: "Excercises Performed",
-          backgroundColor: colors,
+          backgroundColor: [
+            "#6feb60",
+            "#deed5d",
+            "#d03f5f",
+            "#e8a6f5",
+            "#cdded5",
+            "#012580",
+            "#0c7e82",
+            "#00d1a4",
+            "#cdded5",
+            "#a6ea43",
+            "#743924",
+            "#538181",
+            "26F0F1",
+            "4EEFE7",
+            "9DEDD3",
+            "202A25",
+          ],
           data: pounds,
         },
       ],
