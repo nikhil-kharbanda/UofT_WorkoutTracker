@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const path = require("path");
 
+//Resource used: https://stackoverflow.com/questions/25463423/res-sendfile-absolute-path
+
 router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
