@@ -29,8 +29,10 @@
   Run the seeds file
 
 ## Links
+https://uoft-workoutexercise-tracker.herokuapp.com/?id=61926e673a9bab00161a650f
 
 ## Images
+![Image](/Assets/Dashboard.PNG)
 
 ## About the developer 
   nikhik-kharbanda <br >
