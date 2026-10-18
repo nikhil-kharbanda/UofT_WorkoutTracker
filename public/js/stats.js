@@ -1,45 +1,41 @@
+// total weight lifted per workout
 function calculateTotalWeight(data) {
-  const totals = [];
-
-  data.forEach((workout) => {
-    const workoutTotal = workout.exercises.reduce((total, { type, weight }) => {
+  return data.map((workout) =>
+    workout.exercises.reduce((total, { type, weight }) => {
       if (type === "resistance") {
         return total + weight;
       }
       return total;
-    }, 0);
+    }, 0)
+  );
+}
 
-    totals.push(workoutTotal);
+// total minutes per workout
+function duration(data) {
+  return data.map((workout) => workout.totalDuration);
+}
+
+// totals per exercise name across all workouts
+function exerciseTotals(data) {
+  const totals = {};
+
+  data.forEach((workout) => {
+    workout.exercises.forEach(({ name, type, duration, weight }) => {
+      if (!totals[name]) {
+        totals[name] = { duration: 0, weight: 0 };
+      }
+      totals[name].duration += duration || 0;
+      if (type === "resistance") {
+        totals[name].weight += weight || 0;
+      }
+    });
   });
 
   return totals;
 }
 
-function duration(data) {
-  let durations = [];
-  data.forEach((workout) => {
-    workout.exercises.forEach((exercise) => {
-      durations.push(exercise.duration);
-    });
-  });
-
-  return durations;
-}
-
-function workoutNames(data) {
-  let names = [];
-
-  data.forEach((workout) => {
-    workout.exercises.forEach((exercise) => {
-      names.push(exercise.name);
-    });
-  });
-
-  return names;
-}
-
 function colorGenerator() {
-  const arr = [
+  return [
     "#6feb60",
     "#deed5d",
     "#d03f5f",
@@ -48,27 +44,24 @@ function colorGenerator() {
     "#012580",
     "#0c7e82",
     "#00d1a4",
-    "#cdded5",
     "#a6ea43",
     "#743924",
     "#538181",
-    "26F0F1",
-    "4EEFE7",
-    "9DEDD3",
-    "202A25",
+    "#26F0F1",
+    "#4EEFE7",
+    "#9DEDD3",
+    "#202A25",
   ];
-  return arr;
 }
 
 function populateChart(data) {
   const durations = duration(data);
   const pounds = calculateTotalWeight(data);
-  const names = workoutNames(data);
-  const colors = colorGenerator;
-
-  console.log(durations);
-  console.log(pounds);
-  console.log(names);
+  const totals = exerciseTotals(data);
+  const names = Object.keys(totals);
+  const exerciseDurations = names.map((name) => totals[name].duration);
+  const exerciseWeights = names.map((name) => totals[name].weight);
+  const colors = colorGenerator();
 
   const line = document.querySelector("#canvas").getContext("2d");
   const bar = document.querySelector("#canvas2").getContext("2d");
@@ -107,9 +100,13 @@ function populateChart(data) {
         text: "Time Spent Working Out (Last 7 days)",
       },
       scales: {
-        y: {
-          beginAtZero: true,
-        },
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        ],
       },
     },
   });
@@ -165,33 +162,16 @@ function populateChart(data) {
       labels: names,
       datasets: [
         {
-          label: "Excercises Performed (Time)",
-          backgroundColor: [
-            "#6feb60",
-            "#deed5d",
-            "#d03f5f",
-            "#e8a6f5",
-            "#cdded5",
-            "#012580",
-            "#0c7e82",
-            "#00d1a4",
-            "#cdded5",
-            "#a6ea43",
-            "#743924",
-            "#538181",
-            "26F0F1",
-            "4EEFE7",
-            "9DEDD3",
-            "202A25",
-          ],
-          data: durations,
+          label: "Exercises Performed (Time)",
+          backgroundColor: colors,
+          data: exerciseDurations,
         },
       ],
     },
     options: {
       title: {
         display: true,
-        text: "Excercises Performed (Time)",
+        text: "Exercises Performed (Minutes)",
       },
     },
   });
@@ -202,33 +182,16 @@ function populateChart(data) {
       labels: names,
       datasets: [
         {
-          label: "Excercises Performed",
-          backgroundColor: [
-            "#6feb60",
-            "#deed5d",
-            "#d03f5f",
-            "#e8a6f5",
-            "#cdded5",
-            "#012580",
-            "#0c7e82",
-            "#00d1a4",
-            "#cdded5",
-            "#a6ea43",
-            "#743924",
-            "#538181",
-            "26F0F1",
-            "4EEFE7",
-            "9DEDD3",
-            "202A25",
-          ],
-          data: pounds,
+          label: "Exercises Performed",
+          backgroundColor: colors,
+          data: exerciseWeights,
         },
       ],
     },
     options: {
       title: {
         display: true,
-        text: "Excercises Performed",
+        text: "Exercises Performed (Pounds)",
       },
     },
   });

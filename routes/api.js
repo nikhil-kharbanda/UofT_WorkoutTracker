@@ -1,27 +1,23 @@
 const db = require("../models");
 const router = require("express").Router();
 
-//$inc: https://docs.mongodb.com/manual/reference/operator/update/inc/
 //$push: https://docs.mongodb.com/manual/reference/operator/update/push/
+//$addFields: https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/
 //new: https://mongoosejs.com/docs/tutorials/findoneandupdate.html
 
+// computes totalDuration from the exercises so it is always accurate
+const addTotalDuration = {
+  $addFields: { totalDuration: { $sum: "$exercises.duration" } },
+};
 
 //get workouts
 router.get("/api/workouts", (req, res) => {
-  db.Workout.find({})
+  db.Workout.aggregate([addTotalDuration, { $sort: { day: 1 } }])
     .then((dbWorkout) => {
-      dbWorkout.forEach((workout) => {
-        var total = 0;
-        workout.exercises.forEach((exc) => {
-          total += exc.duration;
-        });
-        workout.totalDuration = total;
-      });
-
       res.json(dbWorkout);
     })
     .catch((err) => {
-      res.json(err);
+      res.status(500).json(err);
     });
 });
 
@@ -29,40 +25,44 @@ router.get("/api/workouts", (req, res) => {
 router.put("/api/workouts/:id", (req, res) => {
   db.Workout.findOneAndUpdate(
     { _id: req.params.id },
-    {
-      $inc: { totalDuration: req.body.duration },
-      $push: { exercises: req.body },
-    },
-    { new: true }
+    { $push: { exercises: req.body } },
+    { new: true, runValidators: true }
   )
     .then((dbWorkout) => {
+      if (!dbWorkout) {
+        return res.status(404).json({ message: "Workout not found" });
+      }
       res.json(dbWorkout);
     })
     .catch((err) => {
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
 //create workout
-router.post("/api/workouts", ({ body }, res) => {
+router.post("/api/workouts", (req, res) => {
   db.Workout.create({})
     .then((dbWorkout) => {
       res.json(dbWorkout);
     })
     .catch((err) => {
-      res.json(err);
+      res.status(500).json(err);
     });
 });
 
-// get workouts in range
+// get the last 7 workouts, oldest first
 router.get("/api/workouts/range", (req, res) => {
-  db.Workout.find({})
+  db.Workout.aggregate([
+    addTotalDuration,
+    { $sort: { day: -1 } },
+    { $limit: 7 },
+    { $sort: { day: 1 } },
+  ])
     .then((dbWorkout) => {
-      console.log(dbWorkout);
       res.json(dbWorkout);
     })
     .catch((err) => {
-      res.json(err);
+      res.status(500).json(err);
     });
 });
 

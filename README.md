@@ -17,9 +17,12 @@
   - [Images](#images)
 
 ## Installation
-  Install using "npm i express mongoose morgan nodemon". Run seeds file (npm run seed)
+  Requires Node.js and a running MongoDB server (local, or a hosted one such as MongoDB Atlas).
+  Run `npm install`, then `npm run seed` to load sample workouts.
+  By default the app connects to `mongodb://localhost/workout`; set the `MONGODB_URI` environment variable to use a different database.
 
-## Installation
+## Usage
+  Run `npm start` (or `npm run watch` for auto-reload) and open http://localhost:3000.
   Purpose of this project is to familarize ourselves with NoSQL
 
 ## Contributing
@@ -29,7 +32,7 @@
   Run the seeds file
 
 ## Links
-https://uoft-workoutexercise-tracker.herokuapp.com/?id=61926e673a9bab00161a650f
+  The original Heroku deployment is no longer available (Heroku ended its free tier).
 
 ## Images
 ![LandingPage](/Assets/Dashboard.PNG)
